@@ -1,9 +1,12 @@
 const express = require("express");
 const productosR = require("./routes/productosRoutes");
 const logger = require("./routes/logger");
+const cors = require("cors");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 
 //Middlewares de las rutas
 app.use(logger);
