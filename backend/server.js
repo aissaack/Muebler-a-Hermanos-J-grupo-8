@@ -1,3 +1,14 @@
+// Cargamos las variables de entorno desde el archivo .env a process.env
+// (Debe ir lo más arriba posible para que estén disponibles en toda la aplicación)
+require('dotenv').config();
+
+// Importamos la función de conexión a la base de datos que creamos en config/db.js
+const connectDB = require('./config/db');
+
+// Ejecutamos la función para iniciar la conexión con MongoDB al arrancar el servidor
+connectDB();
+
+
 const express = require("express");
 const productosR = require("./routes/productosRoutes");
 const logger = require("./routes/logger");
