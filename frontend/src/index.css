@@ -3,24 +3,35 @@
 ========================================================= */
 
 :root {
-  --color-principal: #3e3028;
-  --color-principal-hover: #2f241e;
-  --color-acento: #a66a3f;
-  --color-acento-hover: #8f5934;
+  /* Marca e Identidad: Color oscuro de la paleta */
+  --color-principal: #141414;
+  --color-principal-hover: #262626;
 
-  --color-fondo: #f7f4f0;
-  --color-superficie: #ffffff;
+  /* Llamados a la acción (CTA): Color principal (Terracota) */
+  --color-acento: #DE744C;
+  --color-acento-hover: #c45e36;
 
-  --color-texto: #333333;
-  --color-texto-secundario: #666666;
+  /* Destacados y etiquetas: Primer complementario (Mostaza/Dorado) */
+  --color-dorado: #DEB13C;
 
-  --color-borde: #ddd6cf;
+  /* Fondos y superficies: Color claro y blanco */
+  --color-fondo: #F9F9F9;
+  --color-superficie: #FFFFFF;
 
-  --color-favorito: #8a1c3a;
+  /* Detalles y placeholders: Segundo complementario (Salvia) */
+  --color-suave: #BFD8D2;
 
-  --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --sombra-hover: 0 5px 15px rgba(0, 0, 0, 0.14);
+  /* Textos y bordes */
+  --color-texto: #141414;
+  --color-texto-secundario: #555555;
+  --color-borde: #E3E0DC;
 
+  /* Acentos secundarios (ej. botón eliminar / favoritos) */
+  --color-favorito: #DE744C;
+
+  /* Elevación y radios */
+  --sombra-suave: 0 2px 8px rgba(20, 20, 20, 0.06);
+  --sombra-hover: 0 6px 18px rgba(20, 20, 20, 0.12);
   --radio: 8px;
 }
 
