@@ -3,33 +3,18 @@
 ========================================================= */
 
 :root {
-  /* Marca e Identidad: Color oscuro de la paleta */
   --color-principal: #141414;
   --color-principal-hover: #262626;
-
-  /* Llamados a la acción (CTA): Color principal (Terracota) */
   --color-acento: #DE744C;
   --color-acento-hover: #c45e36;
-
-  /* Destacados y etiquetas: Primer complementario (Mostaza/Dorado) */
   --color-dorado: #DEB13C;
-
-  /* Fondos y superficies: Color claro y blanco */
   --color-fondo: #F9F9F9;
   --color-superficie: #FFFFFF;
-
-  /* Detalles y placeholders: Segundo complementario (Salvia) */
   --color-suave: #BFD8D2;
-
-  /* Textos y bordes */
   --color-texto: #141414;
   --color-texto-secundario: #555555;
   --color-borde: #E3E0DC;
-
-  /* Acentos secundarios (ej. botón eliminar / favoritos) */
   --color-favorito: #DE744C;
-
-  /* Elevación y radios */
   --sombra-suave: 0 2px 8px rgba(20, 20, 20, 0.06);
   --sombra-hover: 0 6px 18px rgba(20, 20, 20, 0.12);
   --radio: 8px;
@@ -46,7 +31,6 @@
   box-sizing: border-box;
 }
 
-/* Forzar que toda la cadena padre ocupe el 100% del alto de la pantalla */
 html,
 body,
 #root,
@@ -61,15 +45,13 @@ body,
   line-height: 1.6;
   color: var(--color-texto);
   background-color: var(--color-fondo);
-
-  /* Sticky Footer: Flexbox en columna */
   display: flex;
   flex-direction: column;
 }
 
 
 /* =========================================================
-  HEADER Y NAVEGACIÓN (ESCRITORIO / POR DEFECTO)
+  HEADER Y NAVEGACIÓN
 ========================================================= */
 
 header {
@@ -93,7 +75,6 @@ header nav.navbar-container {
   gap: 1rem;
 }
 
-/* Botón hamburguesa: Oculto por defecto en computadoras */
 .menu-hamburguesa {
   display: none;
   background: none;
@@ -111,7 +92,6 @@ header h1 {
   white-space: nowrap;
 }
 
-/* Enlaces horizontales en escritorio */
 .nav-links {
   list-style: none;
   display: flex;
@@ -219,7 +199,7 @@ section {
 
 
 /* =========================================================
-  TARJETAS DE PRODUCTOS (CON EFECTO HOVER DE AGRANDADO)
+  TARJETAS DE PRODUCTOS
 ========================================================= */
 
 article.producto,
@@ -235,7 +215,6 @@ article.producto,
     box-shadow 0.2s ease;
 }
 
-/* Efecto hover: se eleva y se agranda un poco */
 article.producto:hover,
 .product-card:hover {
   transform: translateY(-4px) scale(1.03);
@@ -531,22 +510,19 @@ footer {
 
 
 /* =========================================================
-  RESPONSIVE (SOLO PANTALLAS PEQUEÑAS)
+  RESPONSIVE
 ========================================================= */
 
 @media (max-width: 768px) {
-  /* Barra en una sola fila horizontal */
   header nav.navbar-container {
     padding: 0.5rem 1rem;
   }
 
-  /* 1. Botón hamburguesa visible a la izquierda */
   .menu-hamburguesa {
     display: block;
     order: 1;
   }
 
-  /* 2. Título centrado */
   header h1 {
     order: 2;
     font-size: 1.1rem;
@@ -554,7 +530,6 @@ footer {
     margin: 0;
   }
 
-  /* 3. Carrito a la derecha */
   .carrito-wrapper {
     order: 3;
   }
@@ -567,7 +542,6 @@ footer {
     display: inline;
   }
 
-  /* 4. Menú desplegable flotante */
   .nav-links {
     display: none;
     position: absolute;
