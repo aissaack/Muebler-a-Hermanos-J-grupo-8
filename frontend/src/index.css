@@ -35,6 +35,23 @@
     box-sizing: border-box;
 }
 
+/* Forzar que toda la cadena padre ocupe el 100% del alto de la pantalla */
+html,
+body,
+#root {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Configurar #root .App en columna flexible */
+#root,
+.App {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 
 /* =========================================================
     BODY
@@ -314,6 +331,64 @@ article.producto:hover,
     background-color: #ead5da;
 }
 
+/* =========================================================
+    ESTILOS DEL CARRITO
+   ========================================================= */
+
+/* Mensaje cuando está vacío */
+.carrito-vacio {
+    text-align: center;
+    color: var(--color-texto-secundario);
+    font-style: italic;
+    padding: 1.5rem;
+}
+
+/* Contenedor principal de la sección */
+.carrito-detalle {
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    padding: 1.5rem;
+    box-shadow: var(--sombra-suave);
+    max-width: 600px;
+    margin: 1.5rem auto;
+}
+
+.carrito-detalle h2 {
+    color: var(--color-principal);
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--color-borde);
+    padding-bottom: 0.5rem;
+}
+
+/* Lista de productos */
+.carrito-detalle ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Cada fila de producto */
+.carrito-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.carrito-item span:first-child {
+    font-weight: 500;
+    color: var(--color-texto);
+}
+
+.carrito-item span:nth-child(2) {
+    font-weight: 600;
+    color: var(--color-principal);
+}
+
 
 /* =========================================================
     TAGS
@@ -344,7 +419,7 @@ article.producto:hover,
    ========================================================= */
 
 
-   /* =========================================================
+/* =========================================================
     FORMULARIOS
    ========================================================= */
 
