@@ -6,26 +6,63 @@ import Carrito from './Carrito';
 // Navbar: barra superior con el título, navegación y el carrito desplegable.
 // Recibe items (array del carrito) y onEliminar (función) por props.
 function Navbar({ items, onEliminar, vista, setVista }) {
-    const total = items.reduce((acc, item) => acc + item.precio, 0);
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const total = items.reduce((acc, item) => acc + item.precio, 0);
 
-    return (
+  const irA = (nuevaVista) => {
+    setVista(nuevaVista);
+    setMenuAbierto(false); // Cierra el menú al hacer clic en una opción
+  };
+
+  return (
     <header>
-        <nav>
-        <h1>Mueblería Hermanos Jota</h1>
-        <ul>
-            <li><button className="link-nav" onClick={() => setVista('inicio')}>Inicio</button></li>
-            <li><button className="link-nav" onClick={() => setVista('inicio')}>Productos</button></li>
-            <li><button className="link-nav" onClick={() => setVista('contacto')}>Contacto</button></li>
-        </ul>
-        <button
-            className="boton carrito-boton"
-            onClick={() => setVista('carrito')}
+      <nav className="navbar-container">
+        {/* Costado Izquierdo: Botón Hamburguesa (solo visible en celular) */}
+        <button 
+          className="menu-hamburguesa"
+          onClick={() => setMenuAbierto(!menuAbierto)}
+          aria-label="Abrir menú"
         >
-            🛒 Carrito ({items.length}) — ${total.toLocaleString('es-AR')}
+          {menuAbierto ? '✕' : '☰'}
         </button>
-        </nav>
+
+        {/* Título Central */}
+        <h1 onClick={() => irA('inicio')} style={{ cursor: 'pointer' }}>
+          Mueblería Hermanos Jota
+        </h1>
+
+        {/* Enlaces de Navegación (se despliegan al presionar el menú) */}
+        <ul className={`nav-links ${menuAbierto ? 'nav-links-abierto' : ''}`}>
+          <li>
+            <button className="link-nav" onClick={() => irA('inicio')}>
+              Inicio
+            </button>
+          </li>
+          <li>
+            <button className="link-nav" onClick={() => irA('inicio')}>
+              Productos
+            </button>
+          </li>
+          <li>
+            <button className="link-nav" onClick={() => irA('contacto')}>
+              Contacto
+            </button>
+          </li>
+        </ul>
+
+        {/* Costado Derecho: Botón Carrito */}
+        <div className="carrito-wrapper">
+          <button
+            className="boton carrito-boton"
+            onClick={() => irA('carrito')}
+          >
+            🛒 <span className="carrito-texto">Carrito ({items.length}) — ${total.toLocaleString('es-AR')}</span>
+            <span className="carrito-icono-movil">({items.length})</span>
+          </button>
+        </div>
+      </nav>
     </header>
-    );
+  );
 }
 
 export default Navbar;
