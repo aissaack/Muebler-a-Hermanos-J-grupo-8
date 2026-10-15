@@ -1,14 +1,19 @@
 const express = require('express'); //importa express
-const productos = require('../data/productos'); //obtiene el array de productos.js
-
+const Product = require('../data/productos'); //obtiene el array de productos.js
 
 const router = express.Router(); //crea un router independiente para las rutas de productos
 
 
 //Esta ruta devuelve el array completo en formato JSON.
 // GET /api/productos
-router.get('/', (req, res, next)=>{
-    res.json(productos);
+router.get('/', async (req, res, next) => {
+    try {
+        //select especifica los campos que quieres traer
+        const productos = await Product.find().select('nombre precio imagenUrl');
+        res.json(productos);
+    } catch (error) {
+        next(error);
+    }
 });
 
 

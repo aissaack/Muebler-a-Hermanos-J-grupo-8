@@ -1,10 +1,20 @@
+require("dotenv").config(); //LEER EL .ENV
 const express = require("express");
+const mongoose = require("mongoose");
 const productosR = require("./routes/productosRoutes");
 const logger = require("./routes/logger");
 const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Lee la variable de entorno que se definio en el .env
+const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+//Conexión a MongoDB Atlas
+mongoose.connect(MONGO_URI)
+    .then(() => console.log("Conectado exitosamente a MongoDB"))
+    .catch((err) => console.error("Error al conectar a MongoDB:", err.message));
 
 app.use(cors());
 
