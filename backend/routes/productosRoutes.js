@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
         const productos = await Product.find().select('nombre precio imagenUrl');
         res.json(productos);
     } catch (error) {
-        next(error);
+        next(error);// Error 500 no previsto
     }
 });
 
@@ -132,6 +132,38 @@ router.put('/:id', async (req, res, next) => {
         error.status = 400;
         }
         next(error);
+    }
+});
+
+// DELETE /api/productos/:id (Eliminar un producto existente)
+router.delete('/:id', async (req, res, next) => {
+    const { id } = req.params;
+
+    //ID invalido
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        const error = new Error('ID de producto inválido');
+        error.status = 400;
+        return next(error);
+    }
+
+    try {
+        //Buscar y eliminar de MongoDB
+        const productoEliminado = await Product.findByIdAndDelete(id);
+
+        //Si el producto no existe
+        if (!productoEliminado) {
+        const error = new Error('Producto no encontrado');
+        error.status = 404;
+        return next(error);
+        }
+
+        //confirmar la eliminación
+        res.json({
+        message: 'Producto eliminado correctamente',
+        producto: productoEliminado
+        });
+    } catch (error) {
+        next(error); // Error 500 no previsto
     }
 });
 
