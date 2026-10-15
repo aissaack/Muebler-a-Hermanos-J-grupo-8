@@ -22,7 +22,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     const { id } = req.params;
 
-    // Error 400: formato de ObjectId inválido
+    // Error 400
     if (!mongoose.Types.ObjectId.isValid(id)) {
         const error = new Error('ID de producto invalido');
         error.status = 400;
@@ -41,7 +41,46 @@ router.get('/:id', async (req, res, next) => {
 
         res.json(producto);
     } catch (error) {
-        next(error); // Error 500 no previsto
+        next(error);
+    }
+});
+
+// POST /api/productos (Crear un nuevo producto)
+router.post('/', async (req, res, next) => {
+    const { nombre, precio, imagenUrl } = req.body;
+
+  //Validación 400
+    if (!nombre || !precio) {
+        const error = new Error('El nombre y el precio son obligatorios');
+        error.status = 400;
+        return next(error);
+    }
+
+  // Validación 400
+    if (typeof precio !== 'number' || precio <= 0) {
+        const error = new Error('El precio debe ser un número mayor a cero');
+        error.status = 400;
+        return next(error);
+    }
+
+    try {
+    //Crear y guardar el nuevo producto en MongoDB
+    const nuevoProducto = new Product({
+        nombre,
+        precio,
+        imagenUrl
+    });
+
+    const productoGuardado = await nuevoProducto.save();
+
+    //Estado 201 Created y el producto guardado
+    res.status(201).json(productoGuardado);
+    } catch (error) {
+        // Si Mongoose lanza un error de validacion
+        if (error.name === 'ValidationError') {
+            error.status = 400;
+        }
+        next(error);
     }
 });
 
