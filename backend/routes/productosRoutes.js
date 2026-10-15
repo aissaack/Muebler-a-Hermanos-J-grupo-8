@@ -84,4 +84,55 @@ router.post('/', async (req, res, next) => {
     }
 });
 
+// PUT /api/productos/:id (Actualizar un producto existente)
+router.put('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    const { nombre, precio, imagenUrl } = req.body;
+
+    //ID invalido
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        const error = new Error('ID de producto inválido');
+        error.status = 400;
+        return next(error);
+    }
+
+    //Por si no agregan los datos
+    if (!nombre || precio === undefined) {
+        const error = new Error('El nombre y el precio son obligatorios');
+        error.status = 400;
+        return next(error);
+    }
+
+    if (typeof precio !== 'number' || precio <= 0) {
+        const error = new Error('El precio ingresado es invalido');
+        error.status = 400;
+        return next(error);
+    }
+
+    try {
+        //Actualizar en MongoDB
+        //.findByIdAndUpdate busca por ID y actualiza ademas lo guarda
+        const productoActualizado = await Product.findByIdAndUpdate(
+        id,
+        { nombre, precio, imagenUrl },
+        { returnDocument: 'after', runValidators: true } //Controla qué documento te devuelve MongoDB y si se validan o no los datos al momento de actualizar
+        );
+
+        //El ID no existe en la base de datos
+        if (!productoActualizado) {
+        const error = new Error('Producto no encontrado');
+        error.status = 404;
+        return next(error);
+        }
+
+        //El producto modificado con exito
+        res.json(productoActualizado);
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+        error.status = 400;
+        }
+        next(error);
+    }
+});
+
 module.exports = router;
