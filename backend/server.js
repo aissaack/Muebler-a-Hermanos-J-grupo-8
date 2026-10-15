@@ -25,12 +25,13 @@ app.use('/api/productos', productosR);
 
 //Middlewares de rutas inexistentes
 app.use((req, res, next) => {
-    const error = new Error(`Ruta no encontrada: ${req.originalUrl}`);
+    const error = new Error(`Ruta no encontrada: ${req.method} ${req.originalUrl}`);
     error.status = 404;
     next(error);
 });
 
 //middleware centralizado de errores
+//captura 400, 404, 500
 app.use((err, req, res, next) => {
     const statusCode = err.status || 500;
 

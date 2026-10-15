@@ -91,7 +91,7 @@ router.put('/:id', async (req, res, next) => {
 
     //ID invalido
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = new Error('ID de producto inválido');
+        const error = new Error('ID de producto invalido');
         error.status = 400;
         return next(error);
     }
@@ -141,7 +141,7 @@ router.delete('/:id', async (req, res, next) => {
 
     //ID invalido
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = new Error('ID de producto inválido');
+        const error = new Error('ID de producto invalido');
         error.status = 400;
         return next(error);
     }
@@ -163,7 +163,7 @@ router.delete('/:id', async (req, res, next) => {
         producto: productoEliminado
         });
     } catch (error) {
-        next(error); // Error 500 no previsto
+        next(error); //Error 500 no previsto
     }
 });
 
