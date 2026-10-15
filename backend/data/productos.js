@@ -9,8 +9,7 @@ const productSchema = new mongoose.Schema({
     }, {
     toJSON: {
         transform: (doc, ret) => {
-        ret.id = ret._id; // Crea la propiedad 'id'
-        delete ret._id;   // Elimina el '_id' con guion bajo
+        delete ret.__v;
         }
     }
 });
