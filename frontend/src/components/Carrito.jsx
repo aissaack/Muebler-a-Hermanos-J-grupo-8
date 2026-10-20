@@ -10,7 +10,7 @@ function Carrito({ items, onEliminar }) {
       <h2>Tu carrito</h2>
       <ul>
         {items.map((item, index) => (
-          <li key={`${item.id}-${index}`} className="carrito-item">
+          <li key={`${item._id}-${index}`} className="carrito-item">
             <span>{item.nombre}</span>
             <span>${item.precio.toLocaleString('es-AR')}</span>
             <button className="boton" onClick={() => onEliminar(index)}>Eliminar</button>

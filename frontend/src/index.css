@@ -539,3 +539,26 @@ header nav {
     font-size: 1.2rem;
     text-align: right;
 }
+
+/* Enlace para ver el detalle del producto */
+.detalle-link {
+    display: block;
+    width: fit-content;
+    color: var(--color-acento);
+    font-weight: 600;
+    text-decoration: none;
+    margin: 0 auto 1rem;
+    padding: 0.35rem 0;
+    transition: color 0.2s ease;
+}
+
+.detalle-link:hover {
+    color: var(--color-acento-hover);
+    text-decoration: underline;
+}
+
+/* Botón para agregar el producto al carrito */
+.product-card .boton {
+    display: flex;
+    width: 100%;
+}

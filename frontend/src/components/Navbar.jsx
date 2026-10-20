@@ -1,31 +1,38 @@
-// Navbar: barra superior con el título y el contador del carrito.
-// Recibe cantidad (número de productos en el carrito) por props.
-import { useState } from 'react';
-import Carrito from './Carrito';
 
-// Navbar: barra superior con el título, navegación y el carrito desplegable.
-// Recibe items (array del carrito) y onEliminar (función) por props.
-function Navbar({ items, onEliminar, vista, setVista }) {
-    const total = items.reduce((acc, item) => acc + item.precio, 0);
+import { Link } from 'react-router-dom';
 
-    return (
+// Barra de navegación: permite acceder a las páginas y consultar el carrito.
+// Recibe items, el array con los productos agregados al carrito.
+function Navbar({ items }) {
+  // Suma los precios de todos los productos del carrito.
+  const total = items.reduce((acc, item) => acc + item.precio, 0);
+
+  return (
     <header>
-        <nav>
+      <nav>
         <h1>Mueblería Hermanos Jota</h1>
+
+        {/* Link cambia de ruta sin recargar toda la página. */}
         <ul>
-            <li><button className="link-nav" onClick={() => setVista('inicio')}>Inicio</button></li>
-            <li><button className="link-nav" onClick={() => setVista('inicio')}>Productos</button></li>
-            <li><button className="link-nav" onClick={() => setVista('contacto')}>Contacto</button></li>
+          <li>
+            <Link className="link-nav" to="/">Inicio</Link>
+          </li>
+          <li>
+            <Link className="link-nav" to="/productos">Productos</Link>
+          </li>
+          <li>
+            <Link className="link-nav" to="/contacto">Contacto</Link>
+          </li>
         </ul>
-        <button
-            className="boton carrito-boton"
-            onClick={() => setVista('carrito')}
-        >
-            🛒 Carrito ({items.length}) — ${total.toLocaleString('es-AR')}
-        </button>
-        </nav>
+
+        {/* Muestra la cantidad de productos y el importe total del carrito. */}
+        <Link className="boton carrito-boton" to="/carrito">
+          🛒 Carrito ({items.length}) — $
+          {total.toLocaleString('es-AR')}
+        </Link>
+      </nav>
     </header>
-    );
+  );
 }
 
 export default Navbar;
