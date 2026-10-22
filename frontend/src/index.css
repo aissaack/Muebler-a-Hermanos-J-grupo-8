@@ -35,17 +35,22 @@
     box-sizing: border-box;
 }
 
+html,
+body,
+#root,
+.App {
+  min-height: 100vh;
+}
 
-/* =========================================================
-    BODY
-   ========================================================= */
-
-
-body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: var(--color-texto);
-    background-color: var(--color-fondo);
+body,
+#root,
+.App {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -434,7 +439,8 @@ footer {
     text-align: center;
 
     padding: 2rem;
-    margin-top: 3rem;
+    margin-top: auto;
+    width: 100%;
 }
 
 
