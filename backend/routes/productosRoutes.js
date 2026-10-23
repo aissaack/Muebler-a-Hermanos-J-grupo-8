@@ -1,6 +1,7 @@
 const express = require('express'); //importa express
 const mongoose = require('mongoose');
-const Product = require('../data/productos'); //obtiene el array de productos.js
+// Modelo Product: ahora se importa desde la carpeta models
+const Product = require('../models/Product');
 
 const router = express.Router(); //crea un router independiente para las rutas de productos
 

@@ -14,7 +14,7 @@ const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
 // Array con los productos actuales, que usamos como datos de prueba
-const productos = require('./data/productos');
+const productos = require('./data/productosSeed');
 
 // Nombre de la base de producción: el seed no puede tocarla sin el flag --prod
 const PROD_DB_NAME = 'muebleria';
