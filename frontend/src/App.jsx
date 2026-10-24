@@ -6,6 +6,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from 'react-router-dom';
 
 // Componentes de la aplicación.
@@ -14,7 +15,15 @@ import Footer from './components/Footer';
 import ContactForm from './components/ContactForm';
 import ProductList from './components/ProductList';
 import ProductDetail from './components/ProductDetail';
+import ProductForm from './components/ProductForm';
 import Carrito from './components/Carrito';
+
+// Muestra el mensaje de éxito que se envía al redirigir con useNavigate
+// después de crear, editar o eliminar un producto.
+function MensajeExito() {
+  const { state } = useLocation();
+  return state?.mensaje ? <p role="status">{state.mensaje}</p> : null;
+}
 
 function App() {
   // Guarda los productos agregados al carrito durante la sesión.
@@ -37,6 +46,8 @@ function App() {
       <Navbar items={carrito} />
 
       <main>
+        <MensajeExito />
+
         {/* Routes muestra la ruta que mejor coincide con la URL actual. */}
         <Routes>
           {/* Ruta 1: página de inicio. */}
@@ -72,6 +83,18 @@ function App() {
 
           {/* Ruta 5: formulario de contacto. */}
           <Route path="/contacto" element={<ContactForm />} />
+
+          {/* Ruta 6: alta de producto (POST). */}
+          {/* Ruta 7: edición de producto (PUT), reutiliza el mismo formulario. */}
+          {/* Cada una tiene su key para que, al pasar de editar a crear, el formulario arranque vacío. */}
+          <Route
+            path="/admin/crear-producto"
+            element={<ProductForm key="crear" />}
+          />
+          <Route
+            path="/admin/editar-producto/:id"
+            element={<ProductForm key="editar" />}
+          />
 
           {/* Si la URL no coincide con ninguna ruta, vuelve al inicio. */}
           <Route path="*" element={<Navigate to="/" replace />} />
