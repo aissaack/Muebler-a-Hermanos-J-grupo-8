@@ -26,7 +26,9 @@ mongoose.connect(MONGO_URI)
     .then(() => console.log("Conectado exitosamente a MongoDB"))
     .catch((err) => console.error("Error al conectar a MongoDB:", err.message));
 
-app.use(cors());
+// CORS: solo acepta pedidos del frontend definido en CLIENT_URL (la URL de Vercel).
+// Si no está definida (desarrollo local), acepta cualquier origen.
+app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 
 //Middlewares de las rutas
 app.use(logger);
