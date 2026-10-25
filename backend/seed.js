@@ -48,9 +48,12 @@ const seed = async () => {
     // 4. Adaptar cada producto al formato del modelo:
     //    - se descarta el "id" numérico (MongoDB crea su propio _id)
     //    - se renombra "imagenURL" a "imagenUrl", como lo define el modelo
-    const docs = productos.map(({ nombre, precio, imagenURL }) => ({
+    //    - se incluyen descripcion y stock, que también forman parte del modelo
+    const docs = productos.map(({ nombre, descripcion, precio, stock, imagenURL }) => ({
         nombre,
+        descripcion,
         precio,
+        stock,
         imagenUrl: imagenURL,
     }));
 
