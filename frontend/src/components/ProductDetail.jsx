@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -11,6 +11,32 @@ function ProductDetail() {
   const [producto, setProducto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [errorEliminar, setErrorEliminar] = useState(null);
+  const navigate = useNavigate();
+
+  // Pide confirmación, elimina el producto (DELETE) y vuelve al catálogo.
+  const eliminarProducto = async () => {
+    if (!window.confirm(`¿Seguro que querés eliminar "${producto.nombre}"?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/productos/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.message || 'No se pudo eliminar el producto');
+      }
+
+      navigate('/productos', {
+        state: { mensaje: 'Producto eliminado correctamente' },
+      });
+    } catch (err) {
+      setErrorEliminar(err.message);
+    }
+  };
 
   // Consulta nuevamente cuando cambia el identificador de la URL.
   useEffect(() => {
@@ -57,13 +83,33 @@ function ProductDetail() {
     <article className="product-detail">
       <img src={producto.imagenUrl} alt={producto.nombre} />
 
-      <h2>{producto.nombre}</h2>
+            <h2>{producto.nombre}</h2>
+
+      {/* La descripción se muestra solo si el producto tiene una. */}
+      {producto.descripcion && <p>{producto.descripcion}</p>}
 
       <p>
         {producto.precio !== undefined
           ? `$${producto.precio.toLocaleString('es-AR')}`
           : 'Consultar precio'}
       </p>
+
+      {/* El stock es opcional: se muestra solo si el producto lo tiene cargado. */}
+      {producto.stock !== undefined && producto.stock !== null && (
+        <p>Stock disponible: {producto.stock}</p>
+      )}
+
+      {/* Acciones de administración: editar (PUT) y eliminar (DELETE). */}
+      <p>
+        <Link className="boton" to={`/admin/editar-producto/${producto._id}`}>
+          Editar
+        </Link>{' '}
+        <button className="boton" onClick={eliminarProducto}>
+          Eliminar
+        </button>
+      </p>
+
+      {errorEliminar && <p role="alert">Error: {errorEliminar}</p>}
 
       <Link to="/productos">Volver al catálogo</Link>
     </article>

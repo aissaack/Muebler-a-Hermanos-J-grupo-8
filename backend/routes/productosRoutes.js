@@ -4,6 +4,13 @@ const mongoose = require('mongoose');
 const Product = require('../models/Product');
 
 const router = express.Router(); //crea un router independiente para las rutas de productos
+// Valida el stock: si viene informado, tiene que ser un número mayor o igual a cero.
+// Si no viene (undefined, null o texto vacío) es válido, porque el campo es opcional.
+const stockEsInvalido = (stock) =>
+    stock !== undefined &&
+    stock !== null &&
+    stock !== '' &&
+    (isNaN(Number(stock)) || Number(stock) < 0);
 
 
 //Esta ruta devuelve el array completo en formato JSON.
@@ -11,7 +18,7 @@ const router = express.Router(); //crea un router independiente para las rutas d
 router.get('/', async (req, res, next) => {
     try {
         //select especifica los campos que quieres traer
-        const productos = await Product.find().select('nombre precio imagenUrl');
+        const productos = await Product.find().select('nombre descripcion precio stock imagenUrl');
         res.json(productos);
     } catch (error) {
         next(error);// Error 500 no previsto
@@ -48,34 +55,44 @@ router.get('/:id', async (req, res, next) => {
 
 // POST /api/productos (Crear un nuevo producto)
 router.post('/', async (req, res, next) => {
-    const { nombre, precio, imagenUrl } = req.body;
+    // Se leen todos los campos del modelo, incluidos descripcion y stock
+    const { nombre, descripcion, precio, stock, imagenUrl } = req.body;
 
-  //Validación 400
+    //Validación 400
     if (!nombre || !precio) {
         const error = new Error('El nombre y el precio son obligatorios');
         error.status = 400;
         return next(error);
     }
 
-  // Validación 400
+    // Validación 400
     if (typeof precio !== 'number' || precio <= 0) {
         const error = new Error('El precio debe ser un número mayor a cero');
         error.status = 400;
         return next(error);
     }
 
+    // Validación 400: el stock, si viene, tiene que ser un número válido
+    if (stockEsInvalido(stock)) {
+        const error = new Error('El stock debe ser un número mayor o igual a cero');
+        error.status = 400;
+        return next(error);
+    }
+
     try {
-    //Crear y guardar el nuevo producto en MongoDB
-    const nuevoProducto = new Product({
-        nombre,
-        precio,
-        imagenUrl
-    });
+        //Crear y guardar el nuevo producto en MongoDB, ahora con todos sus campos
+        const nuevoProducto = new Product({
+            nombre,
+            descripcion,
+            precio,
+            stock,
+            imagenUrl
+        });
 
-    const productoGuardado = await nuevoProducto.save();
+        const productoGuardado = await nuevoProducto.save();
 
-    //Estado 201 Created y el producto guardado
-    res.status(201).json(productoGuardado);
+        //Estado 201 Created y el producto guardado
+        res.status(201).json(productoGuardado);
     } catch (error) {
         // Si Mongoose lanza un error de validacion
         if (error.name === 'ValidationError') {
@@ -85,10 +102,12 @@ router.post('/', async (req, res, next) => {
     }
 });
 
+
 // PUT /api/productos/:id (Actualizar un producto existente)
 router.put('/:id', async (req, res, next) => {
     const { id } = req.params;
-    const { nombre, precio, imagenUrl } = req.body;
+    // Se leen todos los campos del modelo, incluidos descripcion y stock
+    const { nombre, descripcion, precio, stock, imagenUrl } = req.body;
 
     //ID invalido
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -110,31 +129,40 @@ router.put('/:id', async (req, res, next) => {
         return next(error);
     }
 
+    // El stock, si viene, tiene que ser un número válido
+    if (stockEsInvalido(stock)) {
+        const error = new Error('El stock debe ser un número mayor o igual a cero');
+        error.status = 400;
+        return next(error);
+    }
+
     try {
         //Actualizar en MongoDB
         //.findByIdAndUpdate busca por ID y actualiza ademas lo guarda
         const productoActualizado = await Product.findByIdAndUpdate(
-        id,
-        { nombre, precio, imagenUrl },
-        { returnDocument: 'after', runValidators: true } //Controla qué documento te devuelve MongoDB y si se validan o no los datos al momento de actualizar
+            id,
+            { nombre, descripcion, precio, stock, imagenUrl },
+            { returnDocument: 'after', runValidators: true } //Controla qué documento te devuelve MongoDB y si se validan o no los datos al momento de actualizar
         );
 
         //El ID no existe en la base de datos
         if (!productoActualizado) {
-        const error = new Error('Producto no encontrado');
-        error.status = 404;
-        return next(error);
+            const error = new Error('Producto no encontrado');
+            error.status = 404;
+            return next(error);
         }
 
         //El producto modificado con exito
         res.json(productoActualizado);
     } catch (error) {
         if (error.name === 'ValidationError') {
-        error.status = 400;
+            error.status = 400;
         }
         next(error);
     }
 });
+
+
 
 // DELETE /api/productos/:id (Eliminar un producto existente)
 router.delete('/:id', async (req, res, next) => {

@@ -1,3 +1,4 @@
+// frontend/src/components/Navbar.jsx
 
 import { Link } from 'react-router-dom';
 
@@ -22,6 +23,10 @@ function Navbar({ items }) {
           </li>
           <li>
             <Link className="link-nav" to="/contacto">Contacto</Link>
+          </li>
+          {/* Acceso al formulario de alta de productos (ruta /admin/crear-producto). */}
+          <li>
+            <Link className="link-nav" to="/admin/crear-producto">Crear producto</Link>
           </li>
         </ul>
 
