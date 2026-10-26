@@ -83,13 +83,21 @@ function ProductDetail() {
     <article className="product-detail">
       <img src={producto.imagenUrl} alt={producto.nombre} />
 
-      <h2>{producto.nombre}</h2>
+            <h2>{producto.nombre}</h2>
+
+      {/* La descripción se muestra solo si el producto tiene una. */}
+      {producto.descripcion && <p>{producto.descripcion}</p>}
 
       <p>
         {producto.precio !== undefined
           ? `$${producto.precio.toLocaleString('es-AR')}`
           : 'Consultar precio'}
       </p>
+
+      {/* El stock es opcional: se muestra solo si el producto lo tiene cargado. */}
+      {producto.stock !== undefined && producto.stock !== null && (
+        <p>Stock disponible: {producto.stock}</p>
+      )}
 
       {/* Acciones de administración: editar (PUT) y eliminar (DELETE). */}
       <p>
