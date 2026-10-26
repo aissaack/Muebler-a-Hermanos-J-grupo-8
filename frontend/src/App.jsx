@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+
 // Componentes de React Router para gestionar la navegación.
 import {
   BrowserRouter,
@@ -18,6 +19,7 @@ import ProductList from './components/ProductList';
 import ProductDetail from './components/ProductDetail';
 import ProductForm from './components/ProductForm';
 import Carrito from './components/Carrito';
+import Home from './components/Home';
 
 
 // Muestra el mensaje de éxito que se envía al redirigir con useNavigate
@@ -83,13 +85,7 @@ function App() {
           {/* Ruta 1: página de inicio. */}
           <Route
             path="/"
-            element={
-              <>
-                <h2>Bienvenidos a nuestra mueblería</h2>
-                <p>Descubrí nuestros muebles.</p>
-              </>
-            }
-          />
+            element={<Home />}/>
 
           {/* Ruta 2: catálogo con todos los productos disponibles. */}
           <Route
