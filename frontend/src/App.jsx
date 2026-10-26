@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Componentes de React Router para gestionar la navegación.
 import {
@@ -7,6 +7,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  useNavigate,
 } from 'react-router-dom';
 
 // Componentes de la aplicación.
@@ -18,11 +19,40 @@ import ProductDetail from './components/ProductDetail';
 import ProductForm from './components/ProductForm';
 import Carrito from './components/Carrito';
 
+
 // Muestra el mensaje de éxito que se envía al redirigir con useNavigate
-// después de crear, editar o eliminar un producto.
+// después de crear, editar o eliminar un producto, y lo oculta solo a los pocos segundos.
 function MensajeExito() {
-  const { state } = useLocation();
-  return state?.mensaje ? <p role="status">{state.mensaje}</p> : null;
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // El mensaje viaja en el estado de la navegación (si no hay, vale undefined).
+  const mensaje = location.state?.mensaje;
+
+  useEffect(() => {
+    // Si no hay mensaje, no hay nada que programar.
+    if (!mensaje) return;
+
+    // Después de 4 segundos, se reemplaza la entrada actual del historial
+    // por la misma ruta pero sin estado. Eso borra el mensaje de pantalla
+    // y evita que reaparezca al recargar la página (F5).
+    const temporizador = setTimeout(() => {
+      navigate(location.pathname, { replace: true, state: null });
+    }, 4000);
+
+    // Si el usuario cambia de página antes de los 4 segundos,
+    // se cancela el temporizador pendiente para no dejarlo colgado.
+    return () => clearTimeout(temporizador);
+    // location.key cambia en cada navegación, así que el tiempo se reinicia
+    // si llega un mensaje nuevo mientras todavía se mostraba otro.
+  }, [mensaje, location.key, location.pathname, navigate]);
+
+  // La clase "mensaje-exito" define cómo se ve y dónde aparece el aviso.
+  return mensaje ? (
+    <p className="mensaje-exito" role="status">
+      {mensaje}
+    </p>
+  ) : null;
 }
 
 function App() {
