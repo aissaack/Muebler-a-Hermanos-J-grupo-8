@@ -21,6 +21,8 @@ const productSchema = new mongoose.Schema(
 
     // Ruta o enlace de la imagen del producto (texto, opcional)
     imagenUrl: { type: String },
+
+    categoria: { type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' },
   },
   {
     // Al convertir un producto a JSON (lo que devuelve la API),
