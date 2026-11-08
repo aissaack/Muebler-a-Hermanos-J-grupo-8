@@ -6,6 +6,7 @@ const productos = [
     {
     id: 1,
     nombre: "Silla Nórdica",
+    categoria: "Sillas",
     descripcion: "Silla de líneas simples en madera clara, ideal para comedor.",
     precio: 45000,
     stock: 12, // unidades disponibles (dato de ejemplo)
@@ -14,6 +15,7 @@ const productos = [
 {
     id: 2,
     nombre: "Mesa Ratona",
+    categoria: "Mesas",
     descripcion: "Mesa baja para living con tapa de madera y patas de metal.",
     precio: 32000,
     stock: 8,
@@ -22,6 +24,7 @@ const productos = [
 {
     id: 3,
     nombre: "Estantería Industrial",
+    categoria: "Guardado",
     descripcion: "Estantería de estilo industrial con estructura de hierro y estantes de madera.",
     precio: 58000,
     stock: 5,
@@ -30,6 +33,7 @@ const productos = [
 {
     id: 4,
     nombre: "Sillon Oslo",
+    categoria: "Sillones",
     descripcion: "Sillón de dos cuerpos tapizado, cómodo y de diseño escandinavo.",
     precio: 125000,
     stock: 3,
@@ -38,6 +42,7 @@ const productos = [
 {
     id: 5,
     nombre: "Escritorio Nórdico",
+    categoria: "Mesas",
     descripcion: "Escritorio amplio con cajón, pensado para home office.",
     precio: 98000,
     stock: 6,
@@ -46,6 +51,7 @@ const productos = [
 {
     id: 6,
     nombre: "Biblioteca Moderna",
+    categoria: "Guardado",
     descripcion: "Biblioteca de cinco estantes con diseño moderno y liviano.",
     precio: 87000,
     stock: 4,

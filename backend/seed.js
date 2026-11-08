@@ -12,6 +12,7 @@ const mongoose = require('mongoose');
 
 // Modelo Product: define cómo se guarda cada producto
 const Product = require('./models/Product');
+const Categoria = require('./models/Categoria');
 
 // Array con los productos actuales, que usamos como datos de prueba
 const productos = require('./data/productosSeed');
@@ -44,17 +45,23 @@ const seed = async () => {
     // 3. Borrar los productos existentes para no duplicarlos al ejecutar el script otra vez
     await Product.deleteMany({});
     console.log('Productos anteriores eliminados');
+    await Categoria.deleteMany({});
+    const categorias = await Categoria.insertMany(
+        ['Sillas', 'Mesas', 'Sillones', 'Guardado'].map(nombre => ({ nombre }))
+    );
+    const categoriasPorNombre = new Map(categorias.map(categoria => [categoria.nombre, categoria._id]));
 
     // 4. Adaptar cada producto al formato del modelo:
     //    - se descarta el "id" numérico (MongoDB crea su propio _id)
     //    - se renombra "imagenURL" a "imagenUrl", como lo define el modelo
     //    - se incluyen descripcion y stock, que también forman parte del modelo
-    const docs = productos.map(({ nombre, descripcion, precio, stock, imagenURL }) => ({
+    const docs = productos.map(({ nombre, descripcion, precio, stock, imagenURL, categoria }) => ({
         nombre,
         descripcion,
         precio,
         stock,
         imagenUrl: imagenURL,
+        categoria: categoriasPorNombre.get(categoria),
     }));
 
     // 5. Insertar todos los productos de una sola vez
