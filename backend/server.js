@@ -12,6 +12,7 @@ connectDB();
 const express = require("express");
 const mongoose = require("mongoose");
 const productosR = require("./routes/productosRoutes");
+const categoriasR = require("./routes/categoriasRoutes");
 const logger = require("./routes/logger");
 const cors = require("cors");
 
@@ -34,6 +35,7 @@ app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 app.use(logger);
 app.use(express.json());
 app.use('/api/productos', productosR);
+app.use('/api/categorias', categoriasR);
 
 //Middlewares de rutas inexistentes
 app.use((req, res, next) => {
@@ -43,14 +45,26 @@ app.use((req, res, next) => {
 });
 
 //middleware centralizado de errores
-//captura 400, 404, 500
+//captura 400, 404, 409, 500
 app.use((err, req, res, next) => {
-    const statusCode = err.status || 500;
+    let statusCode = err.status || 500;
+    let message = err.message || 'Ha ocurrido un error en el servidor.';
+    if (err.name === 'ValidationError') {
+        statusCode = 400;
+        message = 'Los datos ingresados no son válidos.';
+    } else if (err.name === 'CastError') {
+        statusCode = 400;
+        message = 'El identificador o dato ingresado no es válido.';
+    } else if (err.code === 11000) {
+        statusCode = 409;
+        message = 'El recurso ya existe.';
+    }
 
     console.error(err.message, err.stack);
 
     res.status(statusCode).json({
-    message: err.message || 'Ha ocurrido un error en el servidor.'
+    error: message,
+    message
     });
 });
 
