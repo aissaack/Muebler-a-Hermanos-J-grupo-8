@@ -2,6 +2,7 @@ const express = require('express'); //importa express
 const mongoose = require('mongoose');
 // Modelo Product: ahora se importa desde la carpeta models
 const Product = require('../models/Product');
+const Categoria = require('../models/Categoria');
 
 const router = express.Router(); //crea un router independiente para las rutas de productos
 // Valida el stock: si viene informado, tiene que ser un número mayor o igual a cero.
@@ -16,9 +17,17 @@ const stockEsInvalido = (stock) =>
 //Esta ruta devuelve el array completo en formato JSON.
 // GET /api/productos
 router.get('/', async (req, res, next) => {
+    const { categoria } = req.query;
+    if (categoria !== undefined && (typeof categoria !== 'string' || !mongoose.isValidObjectId(categoria))) {
+        const error = new Error('ID de categoría inválido');
+        error.status = 400;
+        return next(error);
+    }
     try {
         //select especifica los campos que quieres traer
-        const productos = await Product.find().select('nombre descripcion precio stock imagenUrl');
+        const productos = await Product.find(categoria !== undefined ? { categoria } : {})
+            .select('nombre descripcion precio stock imagenUrl categoria')
+            .populate('categoria', 'nombre');
         res.json(productos);
     } catch (error) {
         next(error);// Error 500 no previsto
@@ -38,7 +47,7 @@ router.get('/:id', async (req, res, next) => {
     }
 
     try {
-        const producto = await Product.findById(id);
+        const producto = await Product.findById(id).populate('categoria', 'nombre');
 
         // Error 404: el ID no existe en la base
         if (!producto) {
@@ -56,7 +65,7 @@ router.get('/:id', async (req, res, next) => {
 // POST /api/productos (Crear un nuevo producto)
 router.post('/', async (req, res, next) => {
     // Se leen todos los campos del modelo, incluidos descripcion y stock
-    const { nombre, descripcion, precio, stock, imagenUrl } = req.body;
+    const { nombre, descripcion, precio, stock, imagenUrl, categoria } = req.body;
 
     //Validación 400
     if (!nombre || !precio) {
@@ -80,13 +89,19 @@ router.post('/', async (req, res, next) => {
     }
 
     try {
+        if (categoria !== undefined && (!mongoose.isValidObjectId(categoria) || !(await Categoria.exists({ _id: categoria })))) {
+            const error = new Error('La categoría no existe');
+            error.status = 400;
+            return next(error);
+        }
         //Crear y guardar el nuevo producto en MongoDB, ahora con todos sus campos
         const nuevoProducto = new Product({
             nombre,
             descripcion,
             precio,
             stock,
-            imagenUrl
+            imagenUrl,
+            categoria
         });
 
         const productoGuardado = await nuevoProducto.save();
@@ -107,7 +122,7 @@ router.post('/', async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
     const { id } = req.params;
     // Se leen todos los campos del modelo, incluidos descripcion y stock
-    const { nombre, descripcion, precio, stock, imagenUrl } = req.body;
+    const { nombre, descripcion, precio, stock, imagenUrl, categoria } = req.body;
 
     //ID invalido
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -137,11 +152,16 @@ router.put('/:id', async (req, res, next) => {
     }
 
     try {
+        if (categoria !== undefined && (!mongoose.isValidObjectId(categoria) || !(await Categoria.exists({ _id: categoria })))) {
+            const error = new Error('La categoría no existe');
+            error.status = 400;
+            return next(error);
+        }
         //Actualizar en MongoDB
         //.findByIdAndUpdate busca por ID y actualiza ademas lo guarda
         const productoActualizado = await Product.findByIdAndUpdate(
             id,
-            { nombre, descripcion, precio, stock, imagenUrl },
+            { nombre, descripcion, precio, stock, imagenUrl, ...(categoria !== undefined && { categoria }) },
             { returnDocument: 'after', runValidators: true } //Controla qué documento te devuelve MongoDB y si se validan o no los datos al momento de actualizar
         );
 
