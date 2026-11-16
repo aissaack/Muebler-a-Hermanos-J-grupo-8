@@ -8,17 +8,20 @@
     "dev": "nodemon server.js",
     "seed": "node seed.js",
     "seed:prod": "node seed.js --prod",
-    "test": "node --test tests/contrato.test.js"
+    "test": "node --test tests/contrato.test.js",
+    "test:auth": "node -e \"require('dotenv').config({ quiet: true }); const r = require('child_process').spawnSync(process.execPath, ['--test', 'tests/auth.test.cjs'], { stdio: 'inherit', env: { ...process.env, MONGO_URI: process.env.MONGODB_URI } }); process.exit(r.status ?? 1)\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "chalk": "^4.1.2",
     "cors": "^2.8.6",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.1"
   },
   "devDependencies": {

@@ -13,6 +13,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const productosR = require("./routes/productosRoutes");
 const categoriasR = require("./routes/categoriasRoutes");
+const usuariosR = require("./routes/usuarios");
 const logger = require("./routes/logger");
 const cors = require("cors");
 
@@ -36,6 +37,7 @@ app.use(logger);
 app.use(express.json());
 app.use('/api/productos', productosR);
 app.use('/api/categorias', categoriasR);
+app.use('/api/usuarios', usuariosR);
 
 //Middlewares de rutas inexistentes
 app.use((req, res, next) => {
