@@ -1,10 +1,12 @@
 // frontend/src/components/Navbar.jsx
 
 import { Link } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
 
 // Barra de navegación: permite acceder a las páginas y consultar el carrito.
 // Recibe items, el array con los productos agregados al carrito.
 function Navbar({ items }) {
+  const { usuario, cerrarSesion } = useAuth();
   // Suma los precios de todos los productos del carrito.
   const total = items.reduce((acc, item) => acc + item.precio, 0);
 
@@ -25,9 +27,10 @@ function Navbar({ items }) {
             <Link className="link-nav" to="/contacto">Contacto</Link>
           </li>
           {/* Acceso al formulario de alta de productos (ruta /admin/crear-producto). */}
-          <li>
+          {usuario?.rol === 'admin' && <li>
             <Link className="link-nav" to="/admin/crear-producto">Crear producto</Link>
-          </li>
+          </li>}
+          {usuario ? <li><button type="button" onClick={cerrarSesion}>Cerrar sesión ({usuario.nombre})</button></li> : <><li><Link className="link-nav" to="/login">Ingresar</Link></li><li><Link className="link-nav" to="/registro">Crear cuenta</Link></li></>}
         </ul>
 
         {/* Muestra la cantidad de productos y el importe total del carrito. */}

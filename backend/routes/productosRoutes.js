@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 // Modelo Product: ahora se importa desde la carpeta models
 const Product = require('../models/Product');
 const Categoria = require('../models/Categoria');
+const { verificarToken, soloAdmin } = require('../middleware/auth');
 
 const router = express.Router(); //crea un router independiente para las rutas de productos
 // Valida el stock: si viene informado, tiene que ser un número mayor o igual a cero.
@@ -63,7 +64,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST /api/productos (Crear un nuevo producto)
-router.post('/', async (req, res, next) => {
+router.post('/', verificarToken, soloAdmin, async (req, res, next) => {
     // Se leen todos los campos del modelo, incluidos descripcion y stock
     const { nombre, descripcion, precio, stock, imagenUrl, categoria } = req.body;
 
@@ -119,7 +120,7 @@ router.post('/', async (req, res, next) => {
 
 
 // PUT /api/productos/:id (Actualizar un producto existente)
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', verificarToken, soloAdmin, async (req, res, next) => {
     const { id } = req.params;
     // Se leen todos los campos del modelo, incluidos descripcion y stock
     const { nombre, descripcion, precio, stock, imagenUrl, categoria } = req.body;
@@ -185,7 +186,7 @@ router.put('/:id', async (req, res, next) => {
 
 
 // DELETE /api/productos/:id (Eliminar un producto existente)
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', verificarToken, soloAdmin, async (req, res, next) => {
     const { id } = req.params;
 
     //ID invalido

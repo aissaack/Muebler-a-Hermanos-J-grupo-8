@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 // ProductDetail obtiene el ID de la URL y consulta el producto correspondiente.
 function ProductDetail() {
+  const { usuario, fetchAutenticado } = useAuth();
   // Extrae el parámetro definido en la ruta /productos/:id (es el _id del producto).
   const { id } = useParams();
 
@@ -21,12 +23,14 @@ function ProductDetail() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/api/productos/${id}`, {
+      const res = await fetchAutenticado(`${API_URL}/api/productos/${id}`, {
         method: 'DELETE',
       });
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        if (res.status === 401) throw new Error('Tu sesión venció. Iniciá sesión nuevamente.');
+        if (res.status === 403) throw new Error('No tenés permiso para administrar productos.');
         throw new Error(data.message || 'No se pudo eliminar el producto');
       }
 
@@ -100,14 +104,14 @@ function ProductDetail() {
       )}
 
       {/* Acciones de administración: editar (PUT) y eliminar (DELETE). */}
-      <p>
+      {usuario?.rol === 'admin' && <p>
         <Link className="boton" to={`/admin/editar-producto/${producto._id}`}>
           Editar
         </Link>{' '}
         <button className="boton" onClick={eliminarProducto}>
           Eliminar
         </button>
-      </p>
+      </p>}
 
       {errorEliminar && <p role="alert">Error: {errorEliminar}</p>}
 

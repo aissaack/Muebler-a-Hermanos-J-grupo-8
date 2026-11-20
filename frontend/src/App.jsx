@@ -20,6 +20,16 @@ import ProductDetail from './components/ProductDetail';
 import ProductForm from './components/ProductForm';
 import Carrito from './components/Carrito';
 import Home from './components/Home';
+import AuthForm from './components/AuthForm';
+import { useAuth } from './AuthContext';
+
+function SoloAdmin({ children }) {
+  const { usuario, cargando } = useAuth();
+  if (cargando) return <p>Verificando sesión...</p>;
+  if (!usuario) return <Navigate to="/login" replace />;
+  if (usuario.rol !== 'admin') return <p role="alert">No tenés permiso para administrar productos.</p>;
+  return children;
+}
 
 
 // Muestra el mensaje de éxito que se envía al redirigir con useNavigate
@@ -109,17 +119,19 @@ function App() {
 
           {/* Ruta 5: formulario de contacto. */}
           <Route path="/contacto" element={<ContactForm />} />
+          <Route path="/login" element={<AuthForm key="login" />} />
+          <Route path="/registro" element={<AuthForm key="registro" registro />} />
 
           {/* Ruta 6: alta de producto (POST). */}
           {/* Ruta 7: edición de producto (PUT), reutiliza el mismo formulario. */}
           {/* Cada una tiene su key para que, al pasar de editar a crear, el formulario arranque vacío. */}
           <Route
             path="/admin/crear-producto"
-            element={<ProductForm key="crear" />}
+            element={<SoloAdmin><ProductForm key="crear" /></SoloAdmin>}
           />
           <Route
             path="/admin/editar-producto/:id"
-            element={<ProductForm key="editar" />}
+            element={<SoloAdmin><ProductForm key="editar" /></SoloAdmin>}
           />
 
           {/* Si la URL no coincide con ninguna ruta, vuelve al inicio. */}

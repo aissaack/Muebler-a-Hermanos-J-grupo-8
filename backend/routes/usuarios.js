@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
+const { verificarToken } = require('../middleware/auth');
 
 const router = express.Router();
 const credencialesInvalidas = (email, password) =>
@@ -46,6 +47,16 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ id: usuario._id.toString(), rol: usuario.rol },
         process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token, usuario: datosPublicos(usuario) });
+});
+
+router.get('/perfil', verificarToken, async (req, res) => {
+    const usuario = await Usuario.findById(req.usuario.id).select('nombre email rol');
+    if (!usuario) {
+        const error = new Error('Sesión no válida');
+        error.status = 401;
+        throw error;
+    }
+    res.json(datosPublicos(usuario));
 });
 
 module.exports = router;
