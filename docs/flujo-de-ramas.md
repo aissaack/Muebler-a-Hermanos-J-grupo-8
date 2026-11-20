@@ -32,3 +32,4 @@ Las siguientes ramas estaban integradas en el historial de `develop` y fueron el
 - `feature/css-responsive` fue eliminada localmente y en el remoto. Sus commits no estaban integrados en el historial de `develop`; su último commit era `fb5e2c6`.
 
 - `codex/seguridad-dependencias` fue integrada en `feat/ai-agents` y eliminada localmente y en el remoto. Ambas ramas coincidían en el commit `d41d9bb` antes de la eliminación.
+- `feat/ai-agents` fue integrada en `develop` y eliminada localmente y en el remoto. Ambas ramas coincidían en el commit `51df949` antes de la eliminación.
