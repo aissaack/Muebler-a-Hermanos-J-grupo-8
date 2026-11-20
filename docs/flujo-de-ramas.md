@@ -7,12 +7,31 @@ Las ramas `main` y `develop` son permanentes y deben existir durante todo el pro
 ## Trabajo e integración
 
 - `main` contiene el código de producción, que ya se encuentra desplegado. Solo se incorpora código probado y funcional.
-- `develop` se utiliza para integrar el trabajo de las ramas creadas a partir de la última versión de `develop`.
-- Los cambios se integran primero en `develop`, donde se resuelven los conflictos y se comprueba que el código funcione. Después, el código funcional se pasa de `develop` a `main`.
+- Al iniciar un sprint, todas las ramas para resolver tareas se crean a partir de la última versión de `develop`, nunca de `main`.
+- Al terminar una tarea, se prueba el código, se sube la rama al repositorio remoto y se comprueba que la rama local y la remota coincidan. Luego se espera permiso para integrarla en `develop`.
+- Ninguna rama de tarea se integra directamente en `main`. Los cambios se integran primero en `develop`, donde se resuelven los conflictos y se comprueba que el código funcione.
+
+Flujo: `develop` → rama creada desde `develop` → implementación y pruebas → publicación y comprobación de la rama → espera de permiso para integrar en `develop`.
+
+## Nombres de ramas
+
+| Prefijo | Uso principal | Ejemplo |
+| --- | --- | --- |
+| `feature/` | Nuevas funcionalidades para el usuario. | `feature/login-con-google` |
+| `fix/` | Corrección de errores en desarrollo o staging. | `fix/error-calculo-iva` |
+| `hotfix/` | Corrección urgente de un problema de producción. | `hotfix/caida-pasarela-pagos` |
+| `chore/` | Mantenimiento, configuración o dependencias. | `chore/actualizar-dependencias` |
+| `refactor/` | Reestructuración sin cambiar el comportamiento. | `refactor/optimizar-consultas-sql` |
+| `docs/` | Cambios exclusivos en documentación. | `docs/agregar-guia-instalacion` |
+| `test/` | Agregar o corregir pruebas. | `test/pruebas-unitarias-carrito` |
+| `style/` | Cambios de formato visual o de código sin lógica. | `style/ajustar-margenes-header` |
+| `ci/` o `build/` | Configuración de integración continua, despliegue o compilación. | `ci/configurar-github-actions` |
+
+Las ramas `hotfix/` también se crean desde `develop` y se integran primero en `develop`; no son una excepción al flujo.
 
 ## Cierre de sprint
 
-Al final de cada sprint, `main` y `develop` no deben tener diferencias en su código. Para lograrlo, primero se completa y verifica la integración en `develop` y luego se pasa ese código a `main`.
+Al final de cada sprint, `main` y `develop` no deben tener diferencias en su código. El código pasa de `develop` a `main` solo después de que todas las ramas utilizadas en el sprint estén integradas y probadas en `develop`.
 
 ## Registro de ramas eliminadas
 
