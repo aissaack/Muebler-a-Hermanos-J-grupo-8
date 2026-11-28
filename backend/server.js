@@ -14,6 +14,7 @@ const mongoose = require("mongoose");
 const productosR = require("./routes/productosRoutes");
 const categoriasR = require("./routes/categoriasRoutes");
 const usuariosR = require("./routes/usuarios");
+const pedidosRoutes = require('./routes/pedidosRoutes');
 const logger = require("./routes/logger");
 const cors = require("cors");
 
@@ -38,6 +39,7 @@ app.use(express.json());
 app.use('/api/productos', productosR);
 app.use('/api/categorias', categoriasR);
 app.use('/api/usuarios', usuariosR);
+app.use('/api/pedidos', pedidosRoutes);
 
 //Middlewares de rutas inexistentes
 app.use((req, res, next) => {
@@ -51,7 +53,11 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     let statusCode = err.status || 500;
     let message = err.message || 'Ha ocurrido un error en el servidor.';
-    if (err.name === 'ValidationError') {
+
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        statusCode = 400;
+        message = 'El formato del JSON enviado no es válido.';
+    } else if (err.name === 'ValidationError') {
         statusCode = 400;
         message = 'Los datos ingresados no son válidos.';
     } else if (err.name === 'CastError') {
@@ -60,13 +66,17 @@ app.use((err, req, res, next) => {
     } else if (err.code === 11000) {
         statusCode = 409;
         message = 'El recurso ya existe.';
+    } else if (statusCode === 500 && req.originalUrl.startsWith('/api/pedidos')) {
+        // Para pedidos, ocultar detalles internos en errores 500 sin afectar otras rutas
+        message = 'Ha ocurrido un error en el servidor.';
     }
 
     console.error(err.message, err.stack);
 
     res.status(statusCode).json({
-    error: message,
-    message
+        error: message,
+        message,
+        ...(err.codigo && { codigo: err.codigo })
     });
 });
 
