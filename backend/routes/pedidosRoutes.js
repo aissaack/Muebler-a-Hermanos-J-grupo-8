@@ -16,16 +16,22 @@ function crearErrorHttp(status, mensaje, codigo = null) {
 
 // Convierte pesos a centavos enteros redondeando al centavo mas cercano
 function pesosACentavos(precio) {
-    const str = precio.toFixed(6);
-    const [enteros, decimales = ''] = str.split('.');
-    const primerosDos = decimales.slice(0, 2).padEnd(2, '0');
-    const tercerDigito = Number(decimales[2] || '0');
-
-    let centavos = Number(enteros) * 100 + Number(primerosDos);
-    if (tercerDigito >= 5) {
-    centavos += 1;
+    const [mantisa, exponente = '0'] = String(precio).toLowerCase().split('e');
+    const [enteros, decimales = ''] = mantisa.split('.');
+    const digitos = BigInt(enteros + decimales);
+    const escala = Number(exponente) - decimales.length + 2;
+    let centavos;
+    if (escala >= 0) {
+        centavos = digitos * 10n ** BigInt(escala);
+    } else {
+        const divisor = 10n ** BigInt(-escala);
+        centavos = digitos / divisor;
+        if ((digitos % divisor) * 2n >= divisor) centavos += 1n;
     }
-    return centavos;
+    if (centavos > BigInt(Number.MAX_SAFE_INTEGER)) {
+        throw crearErrorHttp(400, 'El precio de uno o más productos no es válido');
+    }
+    return Number(centavos);
 }
 
 //Genera una huella de los productos solicitados para validar reintentos
@@ -37,8 +43,7 @@ function calcularHashSolicitud(itemsNormalizados) {
 }
 
 // POST /api/pedidos
-router.post('/', verificarToken, async (req, res, next) => {
-    try {
+router.post('/', verificarToken, async (req, res) => {
     //Validar Idempotency-Key
     const rawKey = req.get('Idempotency-Key');
     if (typeof rawKey !== 'string' || rawKey.trim() === '') {
@@ -66,10 +71,11 @@ router.post('/', verificarToken, async (req, res, next) => {
     throw crearErrorHttp(400, 'El producto indicado no es válido');
     }
 
-    if (idsVistos.has(producto)) {
+    const productoNormalizado = producto.toLowerCase();
+    if (idsVistos.has(productoNormalizado)) {
     throw crearErrorHttp(400, 'No se puede repetir el mismo producto en el pedido');
     }
-    idsVistos.add(producto);
+    idsVistos.add(productoNormalizado);
 
     if (!Number.isInteger(cantidad) || cantidad < 1) {
     throw crearErrorHttp(400, 'La cantidad debe ser un número entero mayor o igual a 1');
@@ -80,7 +86,7 @@ router.post('/', verificarToken, async (req, res, next) => {
     }
 
     itemsLimpios.push({
-    producto,
+    producto: productoNormalizado,
     cantidad,
     precioEsperadoCentavos,
     });
@@ -88,6 +94,7 @@ router.post('/', verificarToken, async (req, res, next) => {
 
     const usuarioId = req.usuario.id;
     const payloadHash = calcularHashSolicitud(itemsLimpios);
+    res.locals.intentoPedido = { usuarioId, idempotencyKey, payloadHash };
 
     // 3. Verificar si la clave de intento ya fue usada por este usuario
     const pedidoExistente = await Pedido.findOne({ usuario: usuarioId, idempotencyKey });
@@ -188,7 +195,7 @@ router.post('/', verificarToken, async (req, res, next) => {
         const actualizado = await Producto.findOneAndUpdate(
         { _id: prodDB._id, stock: { $gte: item.cantidad } },
         { $inc: { stock: -item.cantidad } },
-        { new: true, session }
+        { returnDocument: 'after', runValidators: true, session }
         );
 
         if (!actualizado) {
@@ -232,52 +239,24 @@ router.post('/', verificarToken, async (req, res, next) => {
     }
 
     return res.status(201).json(pedidoCreado);
-    } catch (err) {
-    //Resolver dos peticiones simultaneas
-    if (err && err.code === 11000 && req.usuario?.id && req.get('Idempotency-Key')) {
-    try {
-    const pedidoConcurrente = await Pedido.findOne({
-        usuario: req.usuario.id,
-        idempotencyKey: req.get('Idempotency-Key').trim(),
-    });
-    if (pedidoConcurrente) {
-        const items = Array.isArray(req.body?.productos)
-        ? req.body.productos.map(({ producto, cantidad, precioEsperadoCentavos }) => ({
-                producto,
-                cantidad,
-                precioEsperadoCentavos,
-            }))
-        : [];
-        if (pedidoConcurrente.payloadHash === calcularHashSolicitud(items)) {
-        return res.status(201).json(pedidoConcurrente);
-        }
-        return next(
-        crearErrorHttp(
-            409,
-            'La clave de intento ya se usó con otros datos',
-            'CLAVE_REUTILIZADA'
-        )
-        );
-    }
-    } catch (lookupErr) {
-    return next(lookupErr);
-    }
-    }
-
-    return next(err);
-    }
 });
 
 // GET /api/pedidos Consultar los pedidos propios del usuario autenticado
-router.get('/', verificarToken, async (req, res, next) => {
-    try {
+router.get('/', verificarToken, async (req, res) => {
         const pedidos = await Pedido.find({ usuario: req.usuario.id })
             .sort({ createdAt: -1 });
 
         return res.status(200).json(pedidos);
-    } catch (err) {
-        return next(err);
-    }
+});
+
+// Una colisión simultánea de la clave se resuelve antes del manejador central.
+router.use(async (err, req, res, next) => {
+    const intento = res.locals.intentoPedido;
+    if (err.code !== 11000 || !intento) return next(err);
+    const pedido = await Pedido.findOne({ usuario: intento.usuarioId, idempotencyKey: intento.idempotencyKey });
+    if (!pedido) return next(err);
+    if (pedido.payloadHash === intento.payloadHash) return res.status(201).json(pedido);
+    return next(crearErrorHttp(409, 'La clave de intento ya se usó con otros datos', 'CLAVE_REUTILIZADA'));
 });
 
 module.exports = router;

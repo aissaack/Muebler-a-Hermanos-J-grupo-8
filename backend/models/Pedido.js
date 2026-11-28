@@ -6,7 +6,7 @@ const itemPedidoSchema = new mongoose.Schema(
     {
         producto: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Producto',
+        ref: 'Product',
         required: true,
         },
         nombre: {
