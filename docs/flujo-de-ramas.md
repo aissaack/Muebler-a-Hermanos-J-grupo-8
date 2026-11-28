@@ -52,3 +52,4 @@ Las siguientes ramas estaban integradas en el historial de `develop` y fueron el
 
 - `codex/seguridad-dependencias` fue integrada en `feat/ai-agents` y eliminada localmente y en el remoto. Ambas ramas coincidían en el commit `d41d9bb` antes de la eliminación.
 - `feat/ai-agents` fue integrada en `develop` y eliminada localmente y en el remoto. Ambas ramas coincidían en el commit `51df949` antes de la eliminación.
+- `docs/contrato-pedidos` fue integrada en `develop` y eliminada localmente y en el remoto. Ambas ramas coincidían en el commit `c339f57` antes de la eliminación.
